@@ -47,7 +47,36 @@ type BulkViewResponse struct {
 	Data  BulkViewResponseData `json:"data"`
 }
 
-func GetKolayIKPersonList(status string) ([]Persons, error) {
+func getKolayIkPersonPhoneList(status string) ([]string, error) {
+	activePersons, err := getKolayIKPersonList(status)
+
+	if err != nil {
+		return nil, fmt.Errorf("kolay IK PersonIds List Failed %w", err)
+	}
+
+	var phoneNumbers []string
+	for _, person := range activePersons {
+		formattedPhoneNumber := person.getFormattedPhone()
+
+		if formattedPhoneNumber != "" {
+			phoneNumbers = append(phoneNumbers, formattedPhoneNumber)
+		}
+	}
+
+	//for _, person := range activePersons {
+	//	phoneNumber := person.GetFormattedPhoneNumber()
+	//
+	//	if phoneNumber == "" || len(phoneNumber) < 11 {
+	//		fmt.Println("Name:", person.FirstName, person.LastName)
+	//		fmt.Println("Phone:", phoneNumber)
+	//		fmt.Println("--------------------------------")
+	//	}
+	//}
+
+	return phoneNumbers, nil
+}
+
+func getKolayIKPersonList(status string) ([]Persons, error) {
 	Log("Getting Kolay IK active person list...")
 
 	if os.Getenv("KOLAY_IK_TOKEN") == "" {
@@ -130,7 +159,7 @@ func getPersons(personIds []PersonIds) ([]Persons, error) {
 	return response.Data.Persons, nil
 }
 
-func (p *Persons) GetFormattedPhoneNumber() string {
+func (p *Persons) getFormattedPhone() string {
 	var phone string
 
 	if p.WorkPhone != "" && len(p.WorkPhone) > 3 {
