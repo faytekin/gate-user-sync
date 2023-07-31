@@ -49,7 +49,6 @@ type BulkViewResponse struct {
 
 func getKolayIkPersonPhoneList(status string) ([]string, error) {
 	activePersons, err := getKolayIKPersonList(status)
-
 	if err != nil {
 		return nil, fmt.Errorf("kolay IK PersonIds List Failed %w", err)
 	}
@@ -77,8 +76,6 @@ func getKolayIkPersonPhoneList(status string) ([]string, error) {
 }
 
 func getKolayIKPersonList(status string) ([]Persons, error) {
-	Log("Getting Kolay IK active person list...")
-
 	if os.Getenv("KOLAY_IK_TOKEN") == "" {
 		panic("Please put KOLAY_IK_TOKEN to .env file")
 	}
@@ -93,8 +90,6 @@ func getKolayIKPersonList(status string) ([]Persons, error) {
 		return nil, fmt.Errorf("failed to get person phone numbers %w", err)
 	}
 
-	Log("Kolay IK person listing successful...")
-
 	return personList, nil
 }
 
@@ -104,20 +99,18 @@ func getPersonIds(status string) ([]PersonIds, error) {
 
 	body, err := sendAPIRequest("POST", url, os.Getenv("KOLAY_IK_TOKEN"), nil)
 	if err != nil {
-		return nil, fmt.Errorf("kolayIK ile bağlantı kurulamadı")
+		return nil, fmt.Errorf("api request failed => %w", err)
 	}
 
 	var response PersonListResponse
 	err = json.Unmarshal(body, &response)
 	if err != nil {
-		return nil, fmt.Errorf("ailed to parse JSON response %w", err)
+		return nil, fmt.Errorf("failed to parse JSON response %w", err)
 	}
 
 	allPeople = append(allPeople, response.Data.Items...)
 
 	for page := 2; page <= response.Data.LastPage; page++ {
-		Log(fmt.Sprintf("PersonIds List going to next Page in Kolay IK. Page -> %d", page))
-
 		pageURL := fmt.Sprintf("%s&page=%d", url, page)
 
 		body, err = sendAPIRequest("POST", pageURL, os.Getenv("KOLAY_IK_TOKEN"), nil)
@@ -162,7 +155,7 @@ func getPersons(personIds []PersonIds) ([]Persons, error) {
 func (p *Persons) getFormattedPhone() string {
 	var phone string
 
-	if p.WorkPhone != "" && len(p.WorkPhone) > 3 {
+	if p.WorkPhone != "" && len(p.WorkPhone) > 4 {
 		phone = p.WorkPhone
 	} else if p.MobilePhone != "" {
 		phone = p.MobilePhone
@@ -170,5 +163,6 @@ func (p *Persons) getFormattedPhone() string {
 
 	formattedPhoneNumber := strings.ReplaceAll(phone, " ", "")
 	formattedPhoneNumber = strings.ReplaceAll(formattedPhoneNumber, "+", "")
+
 	return formattedPhoneNumber
 }

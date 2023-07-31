@@ -9,11 +9,21 @@ func Init() {
 }
 
 func SyncPersons() {
-	activePersonPhones, err := getKolayIkPersonPhoneList("1")
+	Log("Getting Kolay IK ACTIVE phone list...")
 
+	activePhones, err := getKolayIkPersonPhoneList("1")
 	if err != nil {
-		Log("Kolay IK PersonIds List Failed", err)
+		Log("Kolay IK active phone List Failed", err)
 	}
 
-	Log("Total Kolay IK active phone count => ", len(activePersonPhones))
+	Log("Total Kolay IK active phone count => ", len(activePhones))
+
+	Log("Getting Kolay IK PASSIVE phone list...")
+
+	passivePhones, err := getKolayIkPersonPhoneList("0")
+	if err != nil {
+		Log("Kolay IK passive phone list failed", err)
+	}
+
+	Log("Total Kolay IK passive phone count => ", len(passivePhones))
 }
