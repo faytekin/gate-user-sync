@@ -6,10 +6,8 @@ build/
 tmp/
 main
 
-.env
-
 # Test
 *.out
 
 # Environment variables
-env.yaml
+.env
