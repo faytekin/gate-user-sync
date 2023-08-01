@@ -1,13 +1,14 @@
-package app
+package ik
 
 import (
 	"encoding/json"
 	"fmt"
+	"macellan-gate-user-sync/helper"
 	"os"
 	"strings"
 )
 
-var kolayIKBaseUrl = "https://api.kolayik.com/v2/"
+var BaseUrl = "https://api.kolayik.com/v2/"
 
 type PersonIds struct {
 	Id string `json:"id"`
@@ -47,8 +48,8 @@ type BulkViewResponse struct {
 	Data  BulkViewResponseData `json:"data"`
 }
 
-func getKolayIkPersonPhoneList(status string) ([]string, error) {
-	activePersons, err := getKolayIKPersonList(status)
+func GetPhoneList(status string) ([]string, error) {
+	activePersons, err := getPersonList(status)
 	if err != nil {
 		return nil, fmt.Errorf("kolay IK PersonIds List Failed %w", err)
 	}
@@ -62,20 +63,10 @@ func getKolayIkPersonPhoneList(status string) ([]string, error) {
 		}
 	}
 
-	//for _, person := range activePersons {
-	//	phoneNumber := person.GetFormattedPhoneNumber()
-	//
-	//	if phoneNumber == "" || len(phoneNumber) < 11 {
-	//		fmt.Println("Name:", person.FirstName, person.LastName)
-	//		fmt.Println("Phone:", phoneNumber)
-	//		fmt.Println("--------------------------------")
-	//	}
-	//}
-
 	return phoneNumbers, nil
 }
 
-func getKolayIKPersonList(status string) ([]Persons, error) {
+func getPersonList(status string) ([]Persons, error) {
 	if os.Getenv("KOLAY_IK_TOKEN") == "" {
 		panic("Please put KOLAY_IK_TOKEN to .env file")
 	}
@@ -94,12 +85,12 @@ func getKolayIKPersonList(status string) ([]Persons, error) {
 }
 
 func getPersonIds(status string) ([]PersonIds, error) {
-	url := kolayIKBaseUrl + "person/list?status=" + status
+	url := BaseUrl + "person/list?status=" + status
 	var allPeople []PersonIds
 
-	body, err := sendAPIRequest("POST", url, os.Getenv("KOLAY_IK_TOKEN"), nil)
+	body, err := helper.SendAPIRequest("POST", url, os.Getenv("KOLAY_IK_TOKEN"), nil)
 	if err != nil {
-		return nil, fmt.Errorf("api request failed => %w", err)
+		return nil, fmt.Errorf("kolay ik api request failed => %w", err)
 	}
 
 	var response PersonListResponse
@@ -113,7 +104,7 @@ func getPersonIds(status string) ([]PersonIds, error) {
 	for page := 2; page <= response.Data.LastPage; page++ {
 		pageURL := fmt.Sprintf("%s&page=%d", url, page)
 
-		body, err = sendAPIRequest("POST", pageURL, os.Getenv("KOLAY_IK_TOKEN"), nil)
+		body, err = helper.SendAPIRequest("POST", pageURL, os.Getenv("KOLAY_IK_TOKEN"), nil)
 		if err != nil {
 			return nil, fmt.Errorf("failed KolayIK request %w", err)
 		}
@@ -130,7 +121,7 @@ func getPersonIds(status string) ([]PersonIds, error) {
 }
 
 func getPersons(personIds []PersonIds) ([]Persons, error) {
-	url := kolayIKBaseUrl + "person/bulk-view"
+	url := BaseUrl + "person/bulk-view"
 
 	var ids []string
 	for _, person := range personIds {
@@ -138,7 +129,7 @@ func getPersons(personIds []PersonIds) ([]Persons, error) {
 	}
 
 	requestData := BulkViewRequest{PersonIDs: ids}
-	body, err := sendAPIRequest("POST", url, os.Getenv("KOLAY_IK_TOKEN"), requestData)
+	body, err := helper.SendAPIRequest("POST", url, os.Getenv("KOLAY_IK_TOKEN"), requestData)
 	if err != nil {
 		return nil, err
 	}

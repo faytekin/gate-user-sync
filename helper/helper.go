@@ -1,4 +1,4 @@
-package app
+package helper
 
 import (
 	"bytes"
@@ -21,7 +21,7 @@ func Log(v ...interface{}) {
 	stdLog.Println(green(time.Now().Format("02 01 2006 15:04:05")), fmt.Sprintln(v...))
 }
 
-func sendAPIRequest(method string, url string, bearerToken string, data interface{}) ([]byte, error) {
+func SendAPIRequest(method string, url string, bearerToken string, data interface{}) ([]byte, error) {
 	var req *http.Request
 	var err error
 
@@ -66,4 +66,38 @@ func sendAPIRequest(method string, url string, bearerToken string, data interfac
 	}
 
 	return body, nil
+}
+
+func FindToBeRemoved(ikPassivePhone []string, alternatifPhones []string) []string {
+	var willRemove []string
+
+	for _, val1 := range ikPassivePhone {
+		for _, val2 := range alternatifPhones {
+			if val1 == val2 {
+				willRemove = append(willRemove, val1)
+			}
+		}
+	}
+
+	return willRemove
+}
+
+func FindToBeAdded(ikActivePhones []string, alternatifPhones []string) []string {
+	var willAdd []string
+	exists := false
+
+	for _, val1 := range ikActivePhones {
+		exists = false
+		for _, val2 := range alternatifPhones {
+			if val1 == val2 {
+				exists = true
+				break
+			}
+		}
+		if !exists {
+			willAdd = append(willAdd, val1)
+		}
+	}
+
+	return willAdd
 }

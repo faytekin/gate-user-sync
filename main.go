@@ -8,11 +8,11 @@ import (
 func main() {
 	app.Init()
 
-	app.SyncPersons()
+	_ = app.SyncPersons()
 
 	ticker := time.NewTicker(1 * time.Minute)
 
 	for range ticker.C {
-		app.SyncPersons()
+		_ = app.SyncPersons()
 	}
 }
