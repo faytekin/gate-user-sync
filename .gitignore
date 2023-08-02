@@ -6,6 +6,8 @@ build/
 tmp/
 main
 
+.idea
+
 # Test
 *.out
 
