@@ -7,15 +7,15 @@ import (
 	"gate-user-sync/models"
 )
 
-func GetPhoneList() ([]string, error) {
+func GetPhoneList() (map[string]bool, error) {
 	users, err := getUserList()
 	if err != nil {
 		return nil, err
 	}
 
-	var phoneNumbers []string
+	phoneNumbers := make(map[string]bool)
 	for _, user := range users {
-		phoneNumbers = append(phoneNumbers, user.Phone)
+		phoneNumbers[user.Phone] = true
 	}
 
 	return phoneNumbers, nil

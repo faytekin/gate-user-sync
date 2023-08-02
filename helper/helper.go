@@ -68,16 +68,6 @@ func SendAPIRequest(method string, url string, bearerToken string, data interfac
 	return body, nil
 }
 
-func ToMap(slice []string) map[string]bool {
-	result := make(map[string]bool)
-
-	for _, item := range slice {
-		result[item] = true
-	}
-
-	return result
-}
-
 func FindPhones(phones []string, comparisonPhones map[string]bool, shouldBeIn bool) []string {
 	var result []string
 
@@ -91,14 +81,10 @@ func FindPhones(phones []string, comparisonPhones map[string]bool, shouldBeIn bo
 	return result
 }
 
-func FindToBeRemoved(passivePhones []string, comparisonPhones []string) []string {
-	comparisonPhoneMap := ToMap(comparisonPhones)
-
-	return FindPhones(passivePhones, comparisonPhoneMap, true)
+func FindToBeRemoved(passivePhones []string, comparisonPhones map[string]bool) []string {
+	return FindPhones(passivePhones, comparisonPhones, true)
 }
 
-func FindToBeAdded(activePhones []string, comparisonPhones []string) []string {
-	comparisonPhoneMap := ToMap(comparisonPhones)
-
-	return FindPhones(activePhones, comparisonPhoneMap, false)
+func FindToBeAdded(activePhones []string, comparisonPhones map[string]bool) []string {
+	return FindPhones(activePhones, comparisonPhones, false)
 }

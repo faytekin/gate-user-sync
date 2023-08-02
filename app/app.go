@@ -94,7 +94,7 @@ func getIkPassivePersons() ([]string, error) {
 	return phones, nil
 }
 
-func alternatifUsers() ([]string, error) {
+func alternatifUsers() (map[string]bool, error) {
 	phones, err := alternatif.GetPhoneList()
 	if err != nil {
 		return nil, err
