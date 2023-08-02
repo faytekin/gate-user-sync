@@ -1,5 +1,8 @@
 services:
   gate_user_sync:
-    build: .
+    image: gate_user_sync:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
     volumes:
       - ${PWD}/.env:/app/.env
