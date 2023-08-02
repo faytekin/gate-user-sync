@@ -10,4 +10,4 @@ logs:
 	docker compose -p $(project_name) logs -f gate_user_sync
 
 build:
-	docker compose build
+	docker compose -p $(project_name) build
