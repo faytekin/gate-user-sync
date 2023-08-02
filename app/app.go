@@ -2,10 +2,10 @@ package app
 
 import (
 	"fmt"
+	"gate-user-sync/alternatif"
+	"gate-user-sync/helper"
+	"gate-user-sync/ik"
 	"github.com/joho/godotenv"
-	"macellan-gate-user-sync/alternatif"
-	"macellan-gate-user-sync/helper"
-	"macellan-gate-user-sync/ik"
 	"os"
 )
 

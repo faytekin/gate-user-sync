@@ -1,7 +1,7 @@
 package main
 
 import (
-	"macellan-gate-user-sync/app"
+	"gate-user-sync/app"
 	"time"
 )
 

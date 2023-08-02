@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/macellan-gate-user-sync.iml" filepath="$PROJECT_DIR$/.idea/macellan-gate-user-sync.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../gate-user-sync/.idea/gate-user-sync.iml" filepath="$PROJECT_DIR$/../gate-user-sync/.idea/gate-user-sync.iml" />
     </modules>
   </component>
 </project>

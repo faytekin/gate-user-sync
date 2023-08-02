@@ -3,7 +3,7 @@ package ik
 import (
 	"encoding/json"
 	"fmt"
-	"macellan-gate-user-sync/helper"
+	"gate-user-sync/helper"
 	"os"
 	"strings"
 )
