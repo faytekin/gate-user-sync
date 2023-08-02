@@ -4,30 +4,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"gate-user-sync/helper"
-	"os"
+	"gate-user-sync/models"
 	"strings"
 )
 
-type RequestData struct {
-	Phones []string `json:"phones"`
-}
+var apiConfig *helper.AlternatifAPI
 
-type AddUserResponseData struct {
-	Total           int      `json:"total"`
-	Added           int      `json:"added"`
-	PreviouslyAdded int      `json:"previously_added"`
-	Failed          int      `json:"failed"`
-	FailNumbers     []string `json:"fail_numbers"`
-}
-
-type AddUserResponse struct {
-	Data AddUserResponseData `json:"data"`
-}
-
-type GeneralSuccessResponse struct {
-	Data struct {
-		Success bool `json:"success"`
-	} `json:"data"`
+func SetConfig(config *helper.Config) {
+	apiConfig = &config.AlternatifApi
 }
 
 func AddNewUsers(phones []string) error {
@@ -48,25 +32,6 @@ func AddNewUsers(phones []string) error {
 	return nil
 }
 
-func addNewUsersRequest(phones []string) (AddUserResponseData, error) {
-	url := fmt.Sprintf("%s/user/group/%s/users", BaseUrl, os.Getenv("ALTERNATIF_USER_GROUP_ID"))
-
-	defaultReturn := AddUserResponseData{}
-	data := RequestData{Phones: phones}
-	body, err := helper.SendAPIRequest("POST", url, os.Getenv("ALTERNATIF_TOKEN"), data)
-	if err != nil {
-		return defaultReturn, err
-	}
-
-	var response AddUserResponse
-	err = json.Unmarshal(body, &response)
-	if err != nil {
-		return defaultReturn, err
-	}
-
-	return response.Data, nil
-}
-
 func RemoveUsers(phones []string) error {
 	response, err := removeUsersRequest(phones)
 	if err != nil {
@@ -82,16 +47,35 @@ func RemoveUsers(phones []string) error {
 	return nil
 }
 
-func removeUsersRequest(phones []string) (bool, error) {
-	url := fmt.Sprintf("%s/user/group/%s/users", BaseUrl, os.Getenv("ALTERNATIF_USER_GROUP_ID"))
+func addNewUsersRequest(phones []string) (models.AddUserResponseData, error) {
+	url := fmt.Sprintf("%s/user/group/%s/users", apiConfig.Url, apiConfig.GroupId)
 
-	data := RequestData{Phones: phones}
-	body, err := helper.SendAPIRequest("DELETE", url, os.Getenv("ALTERNATIF_TOKEN"), data)
+	defaultReturn := models.AddUserResponseData{}
+	data := models.RequestData{Phones: phones}
+	body, err := helper.SendAPIRequest("POST", url, apiConfig.BearerToken, data)
+	if err != nil {
+		return defaultReturn, err
+	}
+
+	var response models.AddUserResponse
+	err = json.Unmarshal(body, &response)
+	if err != nil {
+		return defaultReturn, err
+	}
+
+	return response.Data, nil
+}
+
+func removeUsersRequest(phones []string) (bool, error) {
+	url := fmt.Sprintf("%s/user/group/%s/users", apiConfig.Url, apiConfig.GroupId)
+
+	data := models.RequestData{Phones: phones}
+	body, err := helper.SendAPIRequest("DELETE", url, apiConfig.BearerToken, data)
 	if err != nil {
 		return false, err
 	}
 
-	var response GeneralSuccessResponse
+	var response models.GeneralSuccessResponse
 	err = json.Unmarshal(body, &response)
 	if err != nil {
 		return false, err

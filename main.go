@@ -2,17 +2,17 @@ package main
 
 import (
 	"gate-user-sync/app"
-	"time"
+	"log"
 )
 
 func main() {
-	app.Init()
+	err := app.Init()
+	if err != nil {
+		log.Fatalf("Failed to initialize application: %v", err)
+	}
 
-	_ = app.SyncPersons()
-
-	ticker := time.NewTicker(1 * time.Minute)
-
-	for range ticker.C {
-		_ = app.SyncPersons()
+	err = app.SyncPersons()
+	if err != nil {
+		log.Fatalf("Failed to sync persons: %v", err)
 	}
 }

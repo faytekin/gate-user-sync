@@ -18,7 +18,7 @@ var (
 )
 
 func Log(v ...interface{}) {
-	stdLog.Println(green(time.Now().Format("02 01 2006 15:04:05")), fmt.Sprintln(v...))
+	stdLog.Println(green(time.Now().Format("02 01 2006 15:04:05")), fmt.Sprint(v...))
 }
 
 func SendAPIRequest(method string, url string, bearerToken string, data interface{}) ([]byte, error) {
@@ -62,42 +62,43 @@ func SendAPIRequest(method string, url string, bearerToken string, data interfac
 	}
 
 	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("API request failed with status code %d: %s", resp.StatusCode, string(body))
+		return nil, fmt.Errorf("API %s request failed with url %s status code %d: %s", method, url, resp.StatusCode, string(body))
 	}
 
 	return body, nil
 }
 
-func FindToBeRemoved(ikPassivePhone []string, alternatifPhones []string) []string {
-	var willRemove []string
+func ToMap(slice []string) map[string]bool {
+	result := make(map[string]bool)
 
-	for _, val1 := range ikPassivePhone {
-		for _, val2 := range alternatifPhones {
-			if val1 == val2 {
-				willRemove = append(willRemove, val1)
-			}
-		}
+	for _, item := range slice {
+		result[item] = true
 	}
 
-	return willRemove
+	return result
 }
 
-func FindToBeAdded(ikActivePhones []string, alternatifPhones []string) []string {
-	var willAdd []string
-	exists := false
+func FindPhones(phones []string, alternativePhones map[string]bool, shouldBeIn bool) []string {
+	var result []string
 
-	for _, val1 := range ikActivePhones {
-		exists = false
-		for _, val2 := range alternatifPhones {
-			if val1 == val2 {
-				exists = true
-				break
-			}
-		}
-		if !exists {
-			willAdd = append(willAdd, val1)
+	for _, phone := range phones {
+		_, exists := alternativePhones[phone]
+		if exists == shouldBeIn {
+			result = append(result, phone)
 		}
 	}
 
-	return willAdd
+	return result
+}
+
+func FindToBeRemoved(passivePhones []string, alternativePhones []string) []string {
+	alternativePhoneMap := ToMap(alternativePhones)
+
+	return FindPhones(passivePhones, alternativePhoneMap, true)
+}
+
+func FindToBeAdded(activePhones []string, alternativePhones []string) []string {
+	alternativePhoneMap := ToMap(alternativePhones)
+
+	return FindPhones(activePhones, alternativePhoneMap, false)
 }

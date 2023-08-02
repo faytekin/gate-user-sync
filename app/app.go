@@ -5,88 +5,96 @@ import (
 	"gate-user-sync/alternatif"
 	"gate-user-sync/helper"
 	"gate-user-sync/ik"
-	"github.com/joho/godotenv"
-	"os"
 )
 
-func Init() {
-	_ = godotenv.Load(".env")
-}
-
-func SyncPersons() error {
-	ikActivePhones, err := kolayIkPersons("1")
+func Init() error {
+	var err error
+	var config *helper.Config
+	config, err = helper.GetConfig()
 	if err != nil {
-		helper.Log("Kolay IK active phone list failed", err)
+		return fmt.Errorf("failed to get config: %w", err)
+	}
 
+	err = helper.CheckConfig(config)
+	if err != nil {
 		return err
 	}
 
-	ikPassivePhones, err := kolayIkPersons("0")
-	if err != nil {
-		helper.Log("Kolay IK passive phone list failed", err)
+	ik.SetConfig(config)
+	alternatif.SetConfig(config)
 
+	return nil
+}
+
+func SyncPersons() error {
+	ikActivePhones, err := getIkActivePersons()
+	if err != nil {
+		return err
+	}
+
+	ikPassivePhones, err := getIkPassivePersons()
+	if err != nil {
 		return err
 	}
 
 	alternatifPhones, err := alternatifUsers()
 	if err != nil {
-		helper.Log("Alternatif user phone list failed", err)
-
 		return err
 	}
 
-	willRemove := helper.FindToBeRemoved(ikPassivePhones, alternatifPhones)
-	willAdd := helper.FindToBeAdded(ikActivePhones, alternatifPhones)
+	addPhones := helper.FindToBeAdded(ikActivePhones, alternatifPhones)
+	removePhones := helper.FindToBeRemoved(ikPassivePhones, alternatifPhones)
 
-	if len(willAdd) > 0 {
-		err = alternatif.AddNewUsers(willAdd)
+	if len(addPhones) > 0 {
+		err = alternatif.AddNewUsers(addPhones)
 		if err != nil {
-			helper.Log("Error while adding new users", err)
+			helper.Log("Alternatif error while adding new users", err)
 		}
 	}
 
-	if len(willRemove) > 0 {
-		err = alternatif.RemoveUsers(willRemove)
+	if len(removePhones) > 0 {
+		err = alternatif.RemoveUsers(removePhones)
 		if err != nil {
-			helper.Log("Error while removing users", err)
+			helper.Log("Alternatif error while removing users", err)
 		}
 	}
 
 	return nil
 }
 
-func kolayIkPersons(status string) ([]string, error) {
-	var logName string
-	if status == "1" {
-		logName = "ACTIVE"
-	} else {
-		logName = "PASSIVE"
-	}
+func getIkActivePersons() ([]string, error) {
+	helper.Log("Getting IK active phone list...")
 
-	helper.Log("Getting Kolay IK " + logName + " phone list...")
-
-	phones, err := ik.GetPhoneList(status)
+	phones, err := ik.GetPhoneList("1")
 	if err != nil {
-		return nil, fmt.Errorf("Kolay IK "+logName+" phone List Failed %w", err)
+		return nil, err
 	}
 
-	helper.Log("Total Kolay IK "+logName+" phone count => ", len(phones))
+	helper.Log("Total IK active phone count => ", len(phones))
+
+	return phones, nil
+}
+
+func getIkPassivePersons() ([]string, error) {
+	helper.Log("Getting IK passive phone list...")
+
+	phones, err := ik.GetPhoneList("0")
+	if err != nil {
+		return nil, err
+	}
+
+	helper.Log("Total IK passive phone count => ", len(phones))
 
 	return phones, nil
 }
 
 func alternatifUsers() ([]string, error) {
-	users, err := alternatif.GetUserList(os.Getenv("ALTERNATIF_USER_GROUP_ID"))
+	phones, err := alternatif.GetPhoneList()
 	if err != nil {
-		return nil, fmt.Errorf("alternatif user list failed %w", err)
+		return nil, err
 	}
 
-	var phoneNumbers []string
-	for _, user := range users {
-		phoneNumbers = append(phoneNumbers, user.Phone)
-	}
+	helper.Log("Total Alternatif user count => ", len(phones))
 
-	helper.Log("Total Alternatif user count => ", len(phoneNumbers))
-
-	return phoneNumbers, nil
+	return phones, nil
 }
