@@ -23,7 +23,7 @@ type AlternatifAPI struct {
 }
 
 func GetConfig() (*Config, error) {
-	err := godotenv.Load(".env")
+	err := godotenv.Load()
 	if err != nil {
 		return &Config{}, err
 	}

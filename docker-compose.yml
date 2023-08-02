@@ -1,0 +1,5 @@
+services:
+  gate_user_sync:
+    build: .
+    volumes:
+      - ${PWD}/.env:/app/.env
