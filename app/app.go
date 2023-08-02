@@ -27,17 +27,17 @@ func Init() error {
 }
 
 func SyncPersons() error {
-	ikActivePhones, err := getIkActivePersons()
+	ikActivePhones, err := getIkActivePhones()
 	if err != nil {
 		return err
 	}
 
-	ikPassivePhones, err := getIkPassivePersons()
+	ikPassivePhones, err := getIkPassivePhones()
 	if err != nil {
 		return err
 	}
 
-	alternatifPhones, err := alternatifUsers()
+	alternatifPhones, err := getAlternatifPhones()
 	if err != nil {
 		return err
 	}
@@ -68,7 +68,7 @@ func SyncPersons() error {
 	return nil
 }
 
-func getIkActivePersons() ([]string, error) {
+func getIkActivePhones() ([]string, error) {
 	helper.Log("Getting IK active phone list...")
 
 	phones, err := ik.GetPhoneList("1")
@@ -81,7 +81,7 @@ func getIkActivePersons() ([]string, error) {
 	return phones, nil
 }
 
-func getIkPassivePersons() ([]string, error) {
+func getIkPassivePhones() ([]string, error) {
 	helper.Log("Getting IK passive phone list...")
 
 	phones, err := ik.GetPhoneList("0")
@@ -94,7 +94,7 @@ func getIkPassivePersons() ([]string, error) {
 	return phones, nil
 }
 
-func alternatifUsers() (map[string]bool, error) {
+func getAlternatifPhones() (map[string]bool, error) {
 	phones, err := alternatif.GetPhoneList()
 	if err != nil {
 		return nil, err
