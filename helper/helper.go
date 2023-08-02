@@ -78,11 +78,11 @@ func ToMap(slice []string) map[string]bool {
 	return result
 }
 
-func FindPhones(phones []string, alternativePhones map[string]bool, shouldBeIn bool) []string {
+func FindPhones(phones []string, comparisonPhones map[string]bool, shouldBeIn bool) []string {
 	var result []string
 
 	for _, phone := range phones {
-		_, exists := alternativePhones[phone]
+		_, exists := comparisonPhones[phone]
 		if exists == shouldBeIn {
 			result = append(result, phone)
 		}
@@ -91,14 +91,14 @@ func FindPhones(phones []string, alternativePhones map[string]bool, shouldBeIn b
 	return result
 }
 
-func FindToBeRemoved(passivePhones []string, alternativePhones []string) []string {
-	alternativePhoneMap := ToMap(alternativePhones)
+func FindToBeRemoved(passivePhones []string, comparisonPhones []string) []string {
+	comparisonPhoneMap := ToMap(comparisonPhones)
 
-	return FindPhones(passivePhones, alternativePhoneMap, true)
+	return FindPhones(passivePhones, comparisonPhoneMap, true)
 }
 
-func FindToBeAdded(activePhones []string, alternativePhones []string) []string {
-	alternativePhoneMap := ToMap(alternativePhones)
+func FindToBeAdded(activePhones []string, comparisonPhones []string) []string {
+	comparisonPhoneMap := ToMap(comparisonPhones)
 
-	return FindPhones(activePhones, alternativePhoneMap, false)
+	return FindPhones(activePhones, comparisonPhoneMap, false)
 }
