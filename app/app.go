@@ -44,19 +44,25 @@ func SyncPersons() error {
 
 	addPhones := helper.FindToBeAdded(ikActivePhones, alternatifPhones)
 	removePhones := helper.FindToBeRemoved(ikPassivePhones, alternatifPhones)
+	addPhonesLength := len(addPhones)
+	removePhonesLength := len(removePhones)
 
-	if len(addPhones) > 0 {
+	if addPhonesLength > 0 {
 		err = alternatif.AddNewUsers(addPhones)
 		if err != nil {
 			helper.Log("Alternatif error while adding new users", err)
 		}
 	}
 
-	if len(removePhones) > 0 {
+	if removePhonesLength > 0 {
 		err = alternatif.RemoveUsers(removePhones)
 		if err != nil {
 			helper.Log("Alternatif error while removing users", err)
 		}
+	}
+
+	if addPhonesLength == 0 && removePhonesLength == 0 {
+		helper.Log("No changes. The lists are already up to date.")
 	}
 
 	return nil

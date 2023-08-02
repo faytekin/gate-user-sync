@@ -21,7 +21,11 @@ func AddNewUsers(phones []string) error {
 	}
 
 	if response.Added > 0 {
-		helper.Log(fmt.Sprintf("Out of %d records, %d were added. %d have already been added", response.Total, response.Added, response.PreviouslyAdded))
+		helper.Log(fmt.Sprintf("Total %d phones, %d were added.", response.Total, response.Added))
+	}
+
+	if response.PreviouslyAdded > 0 {
+		helper.Log(fmt.Sprintf("%d have already been added", response.PreviouslyAdded))
 	}
 
 	if response.Failed > 0 {
@@ -52,6 +56,7 @@ func addNewUsersRequest(phones []string) (models.AddUserResponseData, error) {
 
 	defaultReturn := models.AddUserResponseData{}
 	data := models.RequestData{Phones: phones}
+
 	body, err := helper.SendAPIRequest("POST", url, apiConfig.BearerToken, data)
 	if err != nil {
 		return defaultReturn, err
