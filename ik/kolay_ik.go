@@ -81,15 +81,10 @@ func getPersonIds(status string) ([]models.PersonIds, error) {
 	return allPeople, nil
 }
 
-func getPersons(personIds []models.PersonIds) ([]models.Persons, error) {
+func fetchPersons(ids []string) ([]models.Persons, error) {
 	url := fmt.Sprintf("%s/person/bulk-view", apiConfig.Url)
-
-	var ids []string
-	for _, person := range personIds {
-		ids = append(ids, person.Id)
-	}
-
 	requestData := models.BulkViewRequest{PersonIDs: ids}
+
 	body, err := helper.SendAPIRequest("POST", url, apiConfig.BearerToken, requestData)
 	if err != nil {
 		return nil, err
@@ -102,4 +97,29 @@ func getPersons(personIds []models.PersonIds) ([]models.Persons, error) {
 	}
 
 	return response.Data.Persons, nil
+}
+
+func getPersons(personIds []models.PersonIds) ([]models.Persons, error) {
+	var allPersons []models.Persons
+	const batchSize = 100
+
+	for i := 0; i < len(personIds); i += batchSize {
+		end := i + batchSize
+		if end > len(personIds) {
+			end = len(personIds)
+		}
+
+		var ids []string
+		for _, person := range personIds[i:end] {
+			ids = append(ids, person.Id)
+		}
+
+		persons, err := fetchPersons(ids)
+		if err != nil {
+			return nil, err
+		}
+		allPersons = append(allPersons, persons...)
+	}
+
+	return allPersons, nil
 }
