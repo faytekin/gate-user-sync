@@ -1,4 +1,4 @@
-package alternatif
+package macellan
 
 import (
 	"encoding/json"
@@ -8,10 +8,10 @@ import (
 	"strings"
 )
 
-var apiConfig *helper.AlternatifAPI
+var apiConfig *helper.MacellanAPI
 
 func SetConfig(config *helper.Config) {
-	apiConfig = &config.AlternatifApi
+	apiConfig = &config.MacellanApi
 }
 
 func AddNewUsers(phones []string) error {

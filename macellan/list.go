@@ -1,4 +1,4 @@
-package alternatif
+package macellan
 
 import (
 	"encoding/json"

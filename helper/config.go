@@ -7,8 +7,8 @@ import (
 )
 
 type Config struct {
-	IKApi         IKAPI
-	AlternatifApi AlternatifAPI
+	IKApi       IKAPI
+	MacellanApi MacellanAPI
 }
 
 type IKAPI struct {
@@ -16,7 +16,7 @@ type IKAPI struct {
 	BearerToken string
 }
 
-type AlternatifAPI struct {
+type MacellanAPI struct {
 	Url         string
 	BearerToken string
 	GroupId     string
@@ -33,10 +33,10 @@ func GetConfig() (*Config, error) {
 			Url:         os.Getenv("KOLAY_IK_API_URL"),
 			BearerToken: os.Getenv("KOLAY_IK_API_TOKEN"),
 		},
-		AlternatifApi: AlternatifAPI{
-			Url:         os.Getenv("ALTERNATIF_API_URL"),
-			BearerToken: os.Getenv("ALTERNATIF_API_TOKEN"),
-			GroupId:     os.Getenv("ALTERNATIF_USER_GROUP_ID"),
+		MacellanApi: MacellanAPI{
+			Url:         os.Getenv("MACELLAN_API_URL"),
+			BearerToken: os.Getenv("MACELLAN_API_TOKEN"),
+			GroupId:     os.Getenv("MACELLAN_USER_GROUP_ID"),
 		},
 	}, nil
 }
@@ -50,16 +50,16 @@ func CheckConfig(config *Config) error {
 		return fmt.Errorf("please put KOLAY_IK_API_TOKEN to .env file")
 	}
 
-	if config.AlternatifApi.Url == "" {
-		return fmt.Errorf("please put ALTERNATIF_API_URL to .env file")
+	if config.MacellanApi.Url == "" {
+		return fmt.Errorf("please put MACELLAN_API_URL to .env file")
 	}
 
-	if config.AlternatifApi.BearerToken == "" {
-		return fmt.Errorf("please put ALTERNATIF_API_TOKEN to .env file")
+	if config.MacellanApi.BearerToken == "" {
+		return fmt.Errorf("please put MACELLAN_API_TOKEN to .env file")
 	}
 
-	if config.AlternatifApi.BearerToken == "" {
-		return fmt.Errorf("please put ALTERNATIF_API_TOKEN to .env file")
+	if config.MacellanApi.BearerToken == "" {
+		return fmt.Errorf("please put MACELLAN_API_TOKEN to .env file")
 	}
 
 	return nil

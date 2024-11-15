@@ -1,5 +1,5 @@
 # Build Stage
-FROM golang:1.20-alpine as BUILDER
+FROM golang:1.23-alpine as BUILDER
 LABEL authors="faytekin"
 
 # install ca-certificates

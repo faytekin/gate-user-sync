@@ -2,9 +2,9 @@ package app
 
 import (
 	"fmt"
-	"gate-user-sync/alternatif"
 	"gate-user-sync/helper"
 	"gate-user-sync/ik"
+	"gate-user-sync/macellan"
 )
 
 func Init() error {
@@ -21,7 +21,7 @@ func Init() error {
 	}
 
 	ik.SetConfig(config)
-	alternatif.SetConfig(config)
+	macellan.SetConfig(config)
 
 	return nil
 }
@@ -37,27 +37,27 @@ func SyncPersons() error {
 		return err
 	}
 
-	alternatifPhones, err := getAlternatifPhones()
+	macellanPhones, err := getMacellanPhones()
 	if err != nil {
 		return err
 	}
 
-	addPhones := helper.FindToBeAdded(ikActivePhones, alternatifPhones)
-	removePhones := helper.FindToBeRemoved(ikPassivePhones, alternatifPhones)
+	addPhones := helper.FindToBeAdded(ikActivePhones, macellanPhones)
+	removePhones := helper.FindToBeRemoved(ikPassivePhones, macellanPhones)
 	addPhonesLength := len(addPhones)
 	removePhonesLength := len(removePhones)
 
 	if addPhonesLength > 0 {
-		err = alternatif.AddNewUsers(addPhones)
+		err = macellan.AddNewUsers(addPhones)
 		if err != nil {
-			helper.Log("Alternatif error while adding new users", err)
+			helper.Log("Macellan error while adding new users", err)
 		}
 	}
 
 	if removePhonesLength > 0 {
-		err = alternatif.RemoveUsers(removePhones)
+		err = macellan.RemoveUsers(removePhones)
 		if err != nil {
-			helper.Log("Alternatif error while removing users", err)
+			helper.Log("Macellan error while removing users", err)
 		}
 	}
 
@@ -94,13 +94,13 @@ func getIkPassivePhones() ([]string, error) {
 	return phones, nil
 }
 
-func getAlternatifPhones() (map[string]bool, error) {
-	phones, err := alternatif.GetPhoneList()
+func getMacellanPhones() (map[string]bool, error) {
+	phones, err := macellan.GetPhoneList()
 	if err != nil {
 		return nil, err
 	}
 
-	helper.Log("Total Alternatif user count => ", len(phones))
+	helper.Log("Total Macellan user count => ", len(phones))
 
 	return phones, nil
 }
